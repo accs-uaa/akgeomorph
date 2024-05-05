@@ -110,3 +110,11 @@ def calculate_heat_load(area_input, elevation_input, slope_input, aspect_input, 
                                 'NONE',
                                 'TIFF',
                                 'NONE')
+    arcpy.management.BuildPyramids(heatload_output,
+                                   '-1',
+                                   'NONE',
+                                   'BILINEAR',
+                                   'L77',
+                                   '',
+                                   'OVERWRITE')
+    arcpy.management.CalculateStatistics(heatload_output)

@@ -78,3 +78,11 @@ def calculate_position(area_input, elevation_input, position_width, position_out
                                 'NONE',
                                 'TIFF',
                                 'NONE')
+    arcpy.management.BuildPyramids(position_output,
+                                   '-1',
+                                   'NONE',
+                                   'BILINEAR',
+                                   'L77',
+                                   '',
+                                   'OVERWRITE')
+    arcpy.management.CalculateStatistics(position_output)

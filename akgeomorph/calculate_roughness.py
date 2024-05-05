@@ -80,3 +80,11 @@ def calculate_roughness(area_input, elevation_input, conversion_factor, roughnes
                                 'NONE',
                                 'TIFF',
                                 'NONE')
+    arcpy.management.BuildPyramids(roughness_output,
+                                   '-1',
+                                   'NONE',
+                                   'BILINEAR',
+                                   'L77',
+                                   '',
+                                   'OVERWRITE')
+    arcpy.management.CalculateStatistics(roughness_output)

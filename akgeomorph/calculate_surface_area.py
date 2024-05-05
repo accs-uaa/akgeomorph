@@ -76,3 +76,11 @@ def calculate_surface_area(area_input, slope_input, conversion_factor, surfacear
                                 'NONE',
                                 'TIFF',
                                 'NONE')
+    arcpy.management.BuildPyramids(surfacearea_output,
+                                   '-1',
+                                   'NONE',
+                                   'BILINEAR',
+                                   'L77',
+                                   '',
+                                   'OVERWRITE')
+    arcpy.management.CalculateStatistics(surfacearea_output)

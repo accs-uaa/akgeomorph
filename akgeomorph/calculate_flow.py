@@ -63,3 +63,11 @@ def calculate_flow(elevation_input, accumulation_output, direction_output):
                                 'NONE',
                                 'CURRENT_SLICE',
                                 'NO_TRANSPOSE')
+    arcpy.management.BuildPyramids(accumulation_output,
+                                   '-1',
+                                   'NONE',
+                                   'BILINEAR',
+                                   'L77',
+                                   '',
+                                   'OVERWRITE')
+    arcpy.management.CalculateStatistics(accumulation_output)

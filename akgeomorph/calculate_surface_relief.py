@@ -92,3 +92,11 @@ def calculate_surface_relief(area_input, elevation_input, conversion_factor, rel
                                 'NONE',
                                 'TIFF',
                                 'NONE')
+    arcpy.management.BuildPyramids(relief_output,
+                                   '-1',
+                                   'NONE',
+                                   'BILINEAR',
+                                   'L77',
+                                   '',
+                                   'OVERWRITE')
+    arcpy.management.CalculateStatistics(relief_output)

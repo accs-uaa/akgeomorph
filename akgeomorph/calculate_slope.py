@@ -62,7 +62,7 @@ def calculate_slope(area_input, elevation_input, z_unit, slope_float, slope_outp
     print('\tExtracting raster to area...')
     extract_integer = ExtractByMask(integer_raster, area_raster)
 
-    # Export rasters
+    # Export 32-bit raster
     print('\tExporting slope as 32-bit float raster...')
     arcpy.management.CopyRaster(slope_raster,
                                 slope_float,
@@ -78,6 +78,16 @@ def calculate_slope(area_input, elevation_input, z_unit, slope_float, slope_outp
                                 'NONE',
                                 'CURRENT_SLICE',
                                 'NO_TRANSPOSE')
+    arcpy.management.BuildPyramids(slope_float,
+                                   '-1',
+                                   'NONE',
+                                   'BILINEAR',
+                                   'L77',
+                                   '',
+                                   'OVERWRITE')
+    arcpy.management.CalculateStatistics(slope_float)
+
+    # Export 16-bit raster
     print('\tExporting slope as 16-bit integer raster...')
     arcpy.management.CopyRaster(extract_integer,
                                 slope_output,
@@ -91,3 +101,11 @@ def calculate_slope(area_input, elevation_input, z_unit, slope_float, slope_outp
                                 'NONE',
                                 'TIFF',
                                 'NONE')
+    arcpy.management.BuildPyramids(slope_output,
+                                   '-1',
+                                   'NONE',
+                                   'BILINEAR',
+                                   'L77',
+                                   '',
+                                   'OVERWRITE')
+    arcpy.management.CalculateStatistics(slope_output)

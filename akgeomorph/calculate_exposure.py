@@ -77,3 +77,11 @@ def calculate_exposure(area_input, aspect_input, slope_input, conversion_factor,
                                 'NONE',
                                 'TIFF',
                                 'NONE')
+    arcpy.management.BuildPyramids(exposure_output,
+                                   '-1',
+                                   'NONE',
+                                   'BILINEAR',
+                                   'L77',
+                                   '',
+                                   'OVERWRITE')
+    arcpy.management.CalculateStatistics(exposure_output)

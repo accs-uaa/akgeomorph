@@ -69,6 +69,14 @@ def calculate_aspect(area_input, elevation_input, z_unit, aspect_float, aspect_o
                                 'NONE',
                                 'CURRENT_SLICE',
                                 'NO_TRANSPOSE')
+    arcpy.management.BuildPyramids(aspect_float,
+                                   '-1',
+                                   'NONE',
+                                   'BILINEAR',
+                                   'L77',
+                                   '',
+                                   'OVERWRITE')
+    arcpy.management.CalculateStatistics(aspect_float)
 
     # Create integer aspect if file is specified
     if aspect_output != None:
@@ -93,3 +101,11 @@ def calculate_aspect(area_input, elevation_input, z_unit, aspect_float, aspect_o
                                     'NONE',
                                     'TIFF',
                                     'NONE')
+        arcpy.management.BuildPyramids(aspect_output,
+                                       '-1',
+                                       'NONE',
+                                       'BILINEAR',
+                                       'L77',
+                                       '',
+                                       'OVERWRITE')
+        arcpy.management.CalculateStatistics(aspect_output)

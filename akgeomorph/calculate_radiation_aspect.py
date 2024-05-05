@@ -77,3 +77,11 @@ def calculate_radiation_aspect(area_input, aspect_input, conversion_factor, radi
                                 'NONE',
                                 'TIFF',
                                 'NONE')
+    arcpy.management.BuildPyramids(radiation_output,
+                                   '-1',
+                                   'NONE',
+                                   'BILINEAR',
+                                   'L77',
+                                   '',
+                                   'OVERWRITE')
+    arcpy.management.CalculateStatistics(radiation_output)
