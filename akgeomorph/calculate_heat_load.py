@@ -114,7 +114,7 @@ def calculate_heat_load(area_input, elevation_input, slope_input, aspect_input, 
                                    '-1',
                                    'NONE',
                                    'BILINEAR',
-                                   'L77',
+                                   'LZ77',
                                    '',
                                    'OVERWRITE')
     arcpy.management.CalculateStatistics(heatload_output)

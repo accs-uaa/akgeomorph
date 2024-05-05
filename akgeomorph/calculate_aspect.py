@@ -73,7 +73,7 @@ def calculate_aspect(area_input, elevation_input, z_unit, aspect_float, aspect_o
                                    '-1',
                                    'NONE',
                                    'BILINEAR',
-                                   'L77',
+                                   'LZ77',
                                    '',
                                    'OVERWRITE')
     arcpy.management.CalculateStatistics(aspect_float)
@@ -105,7 +105,7 @@ def calculate_aspect(area_input, elevation_input, z_unit, aspect_float, aspect_o
                                        '-1',
                                        'NONE',
                                        'BILINEAR',
-                                       'L77',
+                                       'LZ77',
                                        '',
                                        'OVERWRITE')
         arcpy.management.CalculateStatistics(aspect_output)

@@ -80,7 +80,7 @@ def calculate_surface_area(area_input, slope_input, conversion_factor, surfacear
                                    '-1',
                                    'NONE',
                                    'BILINEAR',
-                                   'L77',
+                                   'LZ77',
                                    '',
                                    'OVERWRITE')
     arcpy.management.CalculateStatistics(surfacearea_output)

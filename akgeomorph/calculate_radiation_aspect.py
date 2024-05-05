@@ -81,7 +81,7 @@ def calculate_radiation_aspect(area_input, aspect_input, conversion_factor, radi
                                    '-1',
                                    'NONE',
                                    'BILINEAR',
-                                   'L77',
+                                   'LZ77',
                                    '',
                                    'OVERWRITE')
     arcpy.management.CalculateStatistics(radiation_output)

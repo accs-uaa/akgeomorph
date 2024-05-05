@@ -65,7 +65,7 @@ def calculate_integer_elevation(area_input, elevation_input, elevation_output):
                                    '-1',
                                    'NONE',
                                    'BILINEAR',
-                                   'L77',
+                                   'LZ77',
                                    '',
                                    'OVERWRITE')
     arcpy.management.CalculateStatistics(elevation_output)

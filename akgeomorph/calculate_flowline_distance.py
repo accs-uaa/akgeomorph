@@ -70,7 +70,7 @@ def calculate_flowline_distance(area_input, flowline_input, flowline_output):
                                    '-1',
                                    'NONE',
                                    'BILINEAR',
-                                   'L77',
+                                   'LZ77',
                                    '',
                                    'OVERWRITE')
     arcpy.management.CalculateStatistics(flowline_output)

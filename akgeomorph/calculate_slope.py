@@ -82,7 +82,7 @@ def calculate_slope(area_input, elevation_input, z_unit, slope_float, slope_outp
                                    '-1',
                                    'NONE',
                                    'BILINEAR',
-                                   'L77',
+                                   'LZ77',
                                    '',
                                    'OVERWRITE')
     arcpy.management.CalculateStatistics(slope_float)
@@ -105,7 +105,7 @@ def calculate_slope(area_input, elevation_input, z_unit, slope_float, slope_outp
                                    '-1',
                                    'NONE',
                                    'BILINEAR',
-                                   'L77',
+                                   'LZ77',
                                    '',
                                    'OVERWRITE')
     arcpy.management.CalculateStatistics(slope_output)

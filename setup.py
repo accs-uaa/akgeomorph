@@ -5,7 +5,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setuptools.setup(
     name='akgeomorph',
-    version='0.1.1',
+    version='0.1.2',
     author='Timm Nawrocki',
     author_email='twnawrocki@alaska.edu',
     description='Functions for calculation of geomorphology metrics for Alaska.',

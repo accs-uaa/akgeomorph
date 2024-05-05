@@ -108,7 +108,7 @@ def calculate_wetness(area_input, slope_input, accumulation_input, conversion_fa
                                    '-1',
                                    'NONE',
                                    'BILINEAR',
-                                   'L77',
+                                   'LZ77',
                                    '',
                                    'OVERWRITE')
     arcpy.management.CalculateStatistics(wetness_output)

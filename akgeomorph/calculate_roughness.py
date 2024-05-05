@@ -84,7 +84,7 @@ def calculate_roughness(area_input, elevation_input, conversion_factor, roughnes
                                    '-1',
                                    'NONE',
                                    'BILINEAR',
-                                   'L77',
+                                   'LZ77',
                                    '',
                                    'OVERWRITE')
     arcpy.management.CalculateStatistics(roughness_output)

@@ -96,7 +96,7 @@ def calculate_surface_relief(area_input, elevation_input, conversion_factor, rel
                                    '-1',
                                    'NONE',
                                    'BILINEAR',
-                                   'L77',
+                                   'LZ77',
                                    '',
                                    'OVERWRITE')
     arcpy.management.CalculateStatistics(relief_output)

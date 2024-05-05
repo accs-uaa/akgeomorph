@@ -82,7 +82,7 @@ def calculate_position(area_input, elevation_input, position_width, position_out
                                    '-1',
                                    'NONE',
                                    'BILINEAR',
-                                   'L77',
+                                   'LZ77',
                                    '',
                                    'OVERWRITE')
     arcpy.management.CalculateStatistics(position_output)

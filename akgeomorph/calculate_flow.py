@@ -67,7 +67,7 @@ def calculate_flow(elevation_input, accumulation_output, direction_output):
                                    '-1',
                                    'NONE',
                                    'BILINEAR',
-                                   'L77',
+                                   'LZ77',
                                    '',
                                    'OVERWRITE')
     arcpy.management.CalculateStatistics(accumulation_output)
