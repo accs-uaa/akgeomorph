@@ -20,6 +20,7 @@ def calculate_flowline_distance(accumulation_input, threshold, flowline_output, 
     """
 
     # Import packages
+    import os
     import arcpy
     from arcpy.sa import Con
     from arcpy.sa import DistanceAccumulation
@@ -44,31 +45,31 @@ def calculate_flowline_distance(accumulation_input, threshold, flowline_output, 
     arcpy.env.cellSize = int(cell_size)
 
     # Calculate flowlines
-    print('\tCalculating flowlines...')
-    flowline_raster = SetNull(accumulation_input < threshold, 1)
-
-    # Export flowlines
-    print('\tExporting flowlines raster as 1-bit...')
-    arcpy.management.CopyRaster(flowline_raster,
-                                flowline_output,
-                                '',
-                                '',
-                                '0',
-                                'NONE',
-                                'NONE',
-                                '1_BIT',
-                                'NONE',
-                                'NONE',
-                                'TIFF',
-                                'NONE')
-    arcpy.management.BuildPyramids(flowline_output,
-                                   '-1',
-                                   'NONE',
-                                   'BILINEAR',
-                                   'LZ77',
-                                   '',
-                                   'OVERWRITE')
-    arcpy.management.CalculateStatistics(flowline_output)
+    if os.path.exists(flowline_output) == 0:
+        print('\tCalculating flowlines...')
+        flowline_raster = SetNull(accumulation_input < threshold, 1)
+        # Export flowlines
+        print('\tExporting flowlines raster as 1-bit...')
+        arcpy.management.CopyRaster(flowline_raster,
+                                    flowline_output,
+                                    '',
+                                    '',
+                                    '0',
+                                    'NONE',
+                                    'NONE',
+                                    '1_BIT',
+                                    'NONE',
+                                    'NONE',
+                                    'TIFF',
+                                    'NONE')
+        arcpy.management.BuildPyramids(flowline_output,
+                                       '-1',
+                                       'NONE',
+                                       'BILINEAR',
+                                       'LZ77',
+                                       '',
+                                       'OVERWRITE')
+        arcpy.management.CalculateStatistics(flowline_output)
 
     # Calculate distance to flowline
     print('\tCalculating distance to flowline...')

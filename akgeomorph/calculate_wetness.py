@@ -8,7 +8,8 @@
 # ---------------------------------------------------------------------------
 
 # Define function to calculate compound topographic index
-def calculate_wetness(elevation_input, accumulation_input, z_unit, conversion_factor, neighborhood, wetness_output):
+def calculate_wetness(elevation_input, accumulation_input, z_unit, conversion_factor, neighborhood, slope_output,
+                      wetness_output):
     """
     Description: calculates 16-bit signed topographic wetness
     Inputs: 'elevation_input' -- an input 32-bit float elevation raster
@@ -16,12 +17,14 @@ def calculate_wetness(elevation_input, accumulation_input, z_unit, conversion_fa
             'z-unit' -- a string of the elevation unit
             'conversion_factor' -- an integer to be multiplied with the output for conversion to integer raster
             'neighborhood' -- an integer representing the cell neighborhood for smoothing
+            'slope_output' -- a file path for an output 32-bit float slope raster
             'wetness_output' -- a file path for an output 16-bit integer topographic wetness raster
     Returned Value: Returns a raster dataset on disk
     Preconditions: requires input elevation and flow accumulation rasters
     """
 
     # Import packages
+    import os
     from numpy import pi
     import arcpy
     from arcpy.sa import Con
@@ -54,25 +57,49 @@ def calculate_wetness(elevation_input, accumulation_input, z_unit, conversion_fa
     arcpy.env.cellSize = int(cell_size)
 
     # Calculate raw slope
-    print('\tCalculating raw slope...')
-    slope_raster = SurfaceParameters(elevation_input,
-                                     'SLOPE',
-                                     'QUADRATIC',
-                                     cell_size,
-                                     'FIXED_NEIGHBORHOOD',
-                                     z_unit,
-                                     'DEGREE',
-                                     'GEODESIC_AZIMUTHS',
-                                     '')
+    if os.path.exists(slope_output) == 0:
+        print('\tCalculating raw slope...')
+        slope_raster = SurfaceParameters(elevation_input,
+                                         'SLOPE',
+                                         'QUADRATIC',
+                                         cell_size,
+                                         'FIXED_NEIGHBORHOOD',
+                                         z_unit,
+                                         'DEGREE',
+                                         'GEODESIC_AZIMUTHS',
+                                         '')
+        print('\tExporting slope as 32-bit float raster...')
+        arcpy.management.CopyRaster(slope_raster,
+                                    slope_output,
+                                    '',
+                                    '0',
+                                    '-2147483648',
+                                    'NONE',
+                                    'NONE',
+                                    '32_BIT_FLOAT',
+                                    'NONE',
+                                    'NONE',
+                                    'TIFF',
+                                    'NONE',
+                                    'CURRENT_SLICE',
+                                    'NO_TRANSPOSE')
+        arcpy.management.BuildPyramids(slope_output,
+                                       '-1',
+                                       'NONE',
+                                       'BILINEAR',
+                                       'LZ77',
+                                       '',
+                                       'OVERWRITE')
+        arcpy.management.CalculateStatistics(slope_output)
 
     # Smooth slope
     print('\tSmoothing slope...')
     neighborhood = NbrRectangle(neighborhood, neighborhood, 'CELL')
-    slope_degree = FocalStatistics(slope_raster, neighborhood, 'MEAN', 'DATA')
+    slope_degree = FocalStatistics(Raster(slope_output), neighborhood, 'MEAN', 'DATA')
 
     # Convert degrees to radians
     print('\tConverting slope degrees to radians...')
-    slope_radian = slope_degree * (pi/180)
+    slope_radian = slope_degree * (pi / 180)
 
     # Calculate slope tangent
     print('\tCalculating slope tangent...')
@@ -88,7 +115,7 @@ def calculate_wetness(elevation_input, accumulation_input, z_unit, conversion_fa
 
     # Weight wetness by cosine
     print('\tWeighting by cosine slope...')
-    wetness_weighted = Con(slope_radian >= (pi/6), 0, wetness_index * Cos(slope_radian * 3))
+    wetness_weighted = Con(slope_radian >= (pi / 6), 0, wetness_index * Cos(slope_radian * 3))
 
     # Nibble wetness raster
     print('\tFilling missing values...')
