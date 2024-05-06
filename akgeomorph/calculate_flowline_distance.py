@@ -47,7 +47,7 @@ def calculate_flowline_distance(accumulation_input, threshold, flowline_output, 
     # Calculate flowlines
     if os.path.exists(flowline_output) == 0:
         print('\tCalculating flowlines...')
-        flowline_raster = SetNull(accumulation_input < threshold, 1)
+        flowline_raster = SetNull(Raster(accumulation_input) < threshold, 1)
         # Export flowlines
         print('\tExporting flowlines raster as 1-bit...')
         arcpy.management.CopyRaster(flowline_raster,
