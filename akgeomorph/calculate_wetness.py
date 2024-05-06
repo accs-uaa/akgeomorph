@@ -2,23 +2,23 @@
 # ---------------------------------------------------------------------------
 # Calculate topographic wetness
 # Author: Timm Nawrocki
-# Last Updated: 2024-05-04
+# Last Updated: 2024-05-06
 # Usage: Execute in ArcGIS Pro Python 3.9+.
 # Description: "Calculate topographic wetness" is a function that calculates an index of topographic wetness. This function is adapted from Geomorphometry and Gradient Metrics Toolbox 2.0 by Jeff Evans and Jim Oakleaf (2014) available at https://github.com/jeffreyevans/GradientMetrics. This version is updated to weight the resulting wetness index by the inverse of slope.
 # ---------------------------------------------------------------------------
 
 # Define function to calculate compound topographic index
-def calculate_wetness(area_input, slope_input, accumulation_input, conversion_factor, neighborhood, wetness_output):
+def calculate_wetness(elevation_input, accumulation_input, z_unit, conversion_factor, neighborhood, wetness_output):
     """
     Description: calculates 16-bit signed topographic wetness
-    Inputs: 'area_input' -- a raster of the study area to set snap raster and extract area
-            'slope_input' -- an input 32-bit float slope raster
+    Inputs: 'elevation_input' -- an input 32-bit float elevation raster
             'accumulation_input' -- an input 32-bit float flow accumulation raster
+            'z-unit' -- a string of the elevation unit
             'conversion_factor' -- an integer to be multiplied with the output for conversion to integer raster
             'neighborhood' -- an integer representing the cell neighborhood for smoothing
             'wetness_output' -- a file path for an output 16-bit integer topographic wetness raster
     Returned Value: Returns a raster dataset on disk
-    Preconditions: requires input elevation, flow accumulation, and raw slope raster
+    Preconditions: requires input elevation and flow accumulation rasters
     """
 
     # Import packages
@@ -27,15 +27,16 @@ def calculate_wetness(area_input, slope_input, accumulation_input, conversion_fa
     from arcpy.sa import Con
     from arcpy.sa import Cos
     from arcpy.sa import ExtractByMask
+    from arcpy.sa import FocalStatistics
     from arcpy.sa import Int
     from arcpy.sa import IsNull
     from arcpy.sa import Ln
+    from arcpy.sa import NbrRectangle
     from arcpy.sa import Nibble
     from arcpy.sa import Raster
     from arcpy.sa import SetNull
+    from arcpy.sa import SurfaceParameters
     from arcpy.sa import Tan
-    from arcpy.sa import FocalStatistics
-    from arcpy.sa import NbrRectangle
 
     # Set overwrite option
     arcpy.env.overwriteOutput = True
@@ -44,7 +45,7 @@ def calculate_wetness(area_input, slope_input, accumulation_input, conversion_fa
     arcpy.env.parallelProcessingFactor = "75%"
 
     # Set snap raster and extent
-    area_raster = Raster(area_input)
+    area_raster = Raster(elevation_input)
     arcpy.env.snapRaster = area_raster
     arcpy.env.extent = area_raster.extent
 
@@ -52,10 +53,22 @@ def calculate_wetness(area_input, slope_input, accumulation_input, conversion_fa
     cell_size = arcpy.management.GetRasterProperties(area_raster, 'CELLSIZEX', '').getOutput(0)
     arcpy.env.cellSize = int(cell_size)
 
+    # Calculate raw slope
+    print('\tCalculating raw slope...')
+    slope_raster = SurfaceParameters(elevation_input,
+                                     'SLOPE',
+                                     'QUADRATIC',
+                                     cell_size,
+                                     'FIXED_NEIGHBORHOOD',
+                                     z_unit,
+                                     'DEGREE',
+                                     'GEODESIC_AZIMUTHS',
+                                     '')
+
     # Smooth slope
     print('\tSmoothing slope...')
     neighborhood = NbrRectangle(neighborhood, neighborhood, 'CELL')
-    slope_degree = FocalStatistics(Raster(slope_input), neighborhood, 'MEAN', 'DATA')
+    slope_degree = FocalStatistics(slope_raster, neighborhood, 'MEAN', 'DATA')
 
     # Convert degrees to radians
     print('\tConverting slope degrees to radians...')
