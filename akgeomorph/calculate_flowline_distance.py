@@ -103,14 +103,14 @@ def calculate_flowline_distance(accumulation_input, threshold, flowline_output, 
                                     'NONE',
                                     'TIFF',
                                     'NONE')
-        arcpy.management.BuildPyramids(flowline_output,
+        arcpy.management.BuildPyramids(distance_output,
                                        '-1',
                                        'NONE',
                                        'BILINEAR',
                                        'LZ77',
                                        '',
                                        'OVERWRITE')
-        arcpy.management.CalculateStatistics(flowline_output)
+        arcpy.management.CalculateStatistics(distance_output)
 
     # Calculate flowline distance as maximum possible if flowline raster is all nodata
     else:
@@ -131,11 +131,11 @@ def calculate_flowline_distance(accumulation_input, threshold, flowline_output, 
                                     'NONE',
                                     'TIFF',
                                     'NONE')
-        arcpy.management.BuildPyramids(flowline_output,
+        arcpy.management.BuildPyramids(distance_output,
                                        '-1',
                                        'NONE',
                                        'BILINEAR',
                                        'LZ77',
                                        '',
                                        'OVERWRITE')
-        arcpy.management.CalculateStatistics(flowline_output)
+        arcpy.management.CalculateStatistics(distance_output)
