@@ -26,6 +26,7 @@ def calculate_flowline_distance(accumulation_input, threshold, flowline_output, 
     from arcpy.sa import DistanceAccumulation
     from arcpy.sa import ExtractByMask
     from arcpy.sa import Int
+    from arcpy.sa import IsNull
     from arcpy.sa import Raster
     from arcpy.sa import SetNull
 
@@ -71,38 +72,70 @@ def calculate_flowline_distance(accumulation_input, threshold, flowline_output, 
                                        'OVERWRITE')
         arcpy.management.CalculateStatistics(flowline_output)
 
-    # Calculate distance to flowline
-    print('\tCalculating distance to flowline...')
-    stream_distance = DistanceAccumulation(flowline_output)
+    # Determine if flowline raster is all nodata
+    raster_status = arcpy.management.GetRasterProperties(flowline_output, 'ALLNODATA')
 
-    # Convert to integer
-    print('\tConverting to integer...')
-    integer_raster = Int((stream_distance) + 0.5)
-    corrected_raster = Con(integer_raster > 32767, 32767, integer_raster)
+    # Calculate distance to flowline if the flowline raster contains valid data
+    if int(raster_status[0]) == 0:
+        print('\tCalculating distance to flowline...')
+        flowline_distance = DistanceAccumulation(flowline_output)
 
-    # Extract to area raster
-    print('\tExtracting raster to area...')
-    extract_integer = ExtractByMask(corrected_raster, area_raster)
+        # Convert to integer
+        print('\tConverting to integer...')
+        integer_raster = Int((flowline_distance) + 0.5)
+        corrected_raster = Con(integer_raster > 32767, 32767, integer_raster)
 
-    # Export raster
-    print('\tExporting stream distance raster as 16-bit signed...')
-    arcpy.management.CopyRaster(extract_integer,
-                                distance_output,
-                                '',
-                                '',
-                                '-32768',
-                                'NONE',
-                                'NONE',
-                                '16_BIT_SIGNED',
-                                'NONE',
-                                'NONE',
-                                'TIFF',
-                                'NONE')
-    arcpy.management.BuildPyramids(flowline_output,
-                                   '-1',
-                                   'NONE',
-                                   'BILINEAR',
-                                   'LZ77',
-                                   '',
-                                   'OVERWRITE')
-    arcpy.management.CalculateStatistics(flowline_output)
+        # Extract to area raster
+        print('\tExtracting raster to area...')
+        extract_integer = ExtractByMask(corrected_raster, area_raster)
+
+        # Export raster
+        print('\tExporting stream distance raster as 16-bit signed...')
+        arcpy.management.CopyRaster(extract_integer,
+                                    distance_output,
+                                    '',
+                                    '',
+                                    '-32768',
+                                    'NONE',
+                                    'NONE',
+                                    '16_BIT_SIGNED',
+                                    'NONE',
+                                    'NONE',
+                                    'TIFF',
+                                    'NONE')
+        arcpy.management.BuildPyramids(flowline_output,
+                                       '-1',
+                                       'NONE',
+                                       'BILINEAR',
+                                       'LZ77',
+                                       '',
+                                       'OVERWRITE')
+        arcpy.management.CalculateStatistics(flowline_output)
+
+    # Calculate flowline distance as maximum possible if flowline raster is all nodata
+    else:
+        print('\tInferring maximum distance to flowline...')
+        flowline_distance = Con(IsNull(Raster(accumulation_input)), Raster(accumulation_input), 32767)
+
+        # Export raster
+        print('\tExporting stream distance raster as 16-bit signed...')
+        arcpy.management.CopyRaster(flowline_distance,
+                                    distance_output,
+                                    '',
+                                    '',
+                                    '-32768',
+                                    'NONE',
+                                    'NONE',
+                                    '16_BIT_SIGNED',
+                                    'NONE',
+                                    'NONE',
+                                    'TIFF',
+                                    'NONE')
+        arcpy.management.BuildPyramids(flowline_output,
+                                       '-1',
+                                       'NONE',
+                                       'BILINEAR',
+                                       'LZ77',
+                                       '',
+                                       'OVERWRITE')
+        arcpy.management.CalculateStatistics(flowline_output)
